@@ -1,0 +1,15 @@
+*.redxml
+*.txt
+*.html
+*.pdf
+*~
+*.swp
+/*-[0-9][0-9].xml
+.refcache
+.targets.mk
+venv/
+issues.json
+pulls.json
+draft-tiesel-socketintents-bsdsockets.xml
+draft-tiesel-taps-socketintents-bsdsockets.xml
+draft-tiesel-taps-socketintents-bsdsockets.xml
