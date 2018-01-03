@@ -2,7 +2,7 @@
 title: A Socket Intents Prototype for the BSD Socket API – Experiences, Lessons Learned and Considerations
 abbrev: Socket Intents for BSD Sockets
 docname: draft-tiesel-taps-socketintents-bsdsockets-latest
-date: 2017-07-03
+date: 2018-01-03
 category: info
 
 ipr: trust200902
@@ -17,7 +17,7 @@ author:
  -
     ins: P. S. Tiesel
     name: Philipp S. Tiesel
-    organization: Berlin Institute of Technology
+    organization: TU Berlin
     street: Marchstr. 23
     city: Berlin
     country: Germany
@@ -25,7 +25,7 @@ author:
  -
     ins: T. Enghardt
     name: Theresa Enghardt
-    organization: Berlin Institute of Technology
+    organization: TU Berlin
     street: Marchstr. 23
     city: Berlin
     country: Germany
@@ -145,17 +145,17 @@ Multiple Access Manager
 
 The Multiple Access Manager (MAM) is the central transport option
 selection instance on a host.
-It is realized as a daemon that runs in userspace and receives  
+It is realized as a daemon that runs in userspace and receives
 requests from each application that uses the Socket Intents Library.
 
-The MAM hosts the Policy, which is the actual decision making 
-component, e.g., deciding which source address and therefore which 
+The MAM hosts the Policy, which is the actual decision making
+component, e.g., deciding which source address and therefore which
 source interface to use.
 Upon events, such as an application requesting to resolve a name or to
 connect a socket (see {{apivar}} for details), the Socket Intents
 Library issues a MAM request and the MAM invokes a callback to the
 policy – see {{policy}} for details - which can either communicate
-its decision right away or defer its decision, e.g., when it has to 
+its decision right away or defer its decision, e.g., when it has to
 wait for the results of name resolution.
 The results and decisions are communicated back to the Socket
 Intents Library through the MAM response, where they are applied to the
@@ -164,8 +164,8 @@ actual socket, see also {{prototypearch}}.
 To support the policy, the MAM maintains a list of IP prefixes that are
 configured on the local interfaces and available for outgoing
 communications.
-As destination address selection and path selection are highly 
-dependent on each other, the MAM integrates DNS resolution and maintains 
+As destination address selection and path selection are highly
+dependent on each other, the MAM integrates DNS resolution and maintains
 separate resolver configurations per prefix (see {{ANRW17-MH}} for
 further discussion on multiple PvDs and DNS resolution).
 Furthermore, the MAM includes data collectors which periodically gather
@@ -211,10 +211,10 @@ Policy decisions can include:
 - Reusing a socket from a given socket set (only for the API variant
   described in {{socketconnectapi}})
 
-Note that in our current implementation, the policy is a piece of code 
+Note that in our current implementation, the policy is a piece of code
 which can in principle execute arbitrary instructions.
 We assume this is acceptable for an experimental platform but would prefer
-an abstract description like a domain-specific language for a 
+an abstract description like a domain-specific language for a
 production system.
 
 Path characteristics data collectors {#pmeasure}
@@ -224,7 +224,7 @@ The data collectors are implemented as a component of the MAM, within a
 callback that is executed periodically, e.g., every 100 ms. When this
 callback is invoked, the MAM passively gathers statistics about the
 current usage and properties of the available local interfaces and
-stores them in per-interface or per-network prefix data structures.  
+stores them in per-interface or per-network prefix data structures.
 
 Measured properties include:
 
@@ -479,14 +479,14 @@ Returns 0 on success, or -1 on failure.
 Classic API / getaddrinfo {#getaddrinfoapi}
 -------------------------
 
-In this variant, Socket Intents are passed directly to `getaddrinfo()` 
-as part of the `hints` parameter. 
+In this variant, Socket Intents are passed directly to `getaddrinfo()`
+as part of the `hints` parameter.
 The name resolution is done by the MAM, which makes all decisions and
-stores them in the "result" data structure as list of options ordered 
+stores them in the "result" data structure as list of options ordered
 by preference.
 Subsequently, applications can use this information for calls to the
 unmodified BSD Socket API or other APIs.
-We provide helpers to apply all socket options from the "result" 
+We provide helpers to apply all socket options from the "result"
 data structure.
 
 All relevant infos are stored in our addrinfo struct (see {{muacc_addrinfo}})
@@ -567,7 +567,7 @@ Socketconnect API {#socketconnectapi}
 
 In this API variant, we move the functionality of resolving a hostname
 and connecting to the resulting address into one function called
-`socketconnect()`. 
+`socketconnect()`.
 This API makes it possible to call socketconnect not only for
 each connection, but also to multiplex messages across multiple
 existing sockets.
@@ -633,7 +633,7 @@ API Implementation Experiences & Lessons Learned
 
 While designing and implementing the different parts of the system as
 described in this document, we faced several challenges.
-In the Multiple Access Manager discovering the currently available 
+In the Multiple Access Manager discovering the currently available
 paths and statistics about their performance turned out to be quite
 complex and had to be implemented in a partially platform-dependent way.
 However, the most challenging parts were the Socket Intents API and
@@ -794,14 +794,14 @@ UDP associations), the API variant described in {{getaddrinfoapi}}
 seems to be a good compromise, even if it forces the application to try
 all candidates itself (either in a sequential or partial parallel
 fashion).
-This option is easily deployable, but does not include automation of 
+This option is easily deployable, but does not include automation of
 techniques like connection caching or HTTP pipelining.
 
-The most versatile API variant described in {{socketconnectapi}} 
-implements connection caching on the transport layer. 
+The most versatile API variant described in {{socketconnectapi}}
+implements connection caching on the transport layer.
 This comes at the cost of heavily modifying existing applications.
-If feasible, given the unnecessary complexity of the file I/O 
-integration of BSD sockets, it seems easier to move to a totally 
+If feasible, given the unnecessary complexity of the file I/O
+integration of BSD sockets, it seems easier to move to a totally
 different system like {{I-D.trammell-taps-post-sockets}}.
 
 
@@ -809,9 +809,10 @@ different system like {{I-D.trammell-taps-post-sockets}}.
 Acknowledgments
 ===============
 
-Thanks to Tobias Kaiser <mail@tb-kaiser.de> for drafting and
-implementing the API variant described in {{getaddrinfoapi}}
-as part of his BA thesis.
+The API variant described in {{getaddrinfoapi}} was originally drafted and implemented by Tobias Kaiser <mail@tb-kaiser.de> as part of his BA thesis.
+
+This work has been supported by Leibniz Prize project funds of DFG - German Research Foundation: Gottfried Wilhelm Leibniz-Preis 2011 (FKZ FE 570/4-1).
+
 
 --- back
 
@@ -973,3 +974,11 @@ write(socket, &buf, LENGTH_OF_DATA);
 socketclose(socket);
 ~~~~~~~~~~~~~~~~~~~~~~
 
+
+Changes
+=======
+
+Since -00
+---------
+ - Fixed Author's affiliations and funding
+ - Fixed acknowledgments
